@@ -1,3 +1,11 @@
+# Copyright (c) 2020, Xiaotian Derrick Yang
+# All rights reserved.
+#
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree.
+
+"""Quantum circuit class for containing quantum state."""
+
 import numpy as np
 import string
 import warnings
@@ -5,26 +13,58 @@ import warnings
 
 class Circuit:
     def __init__(self, coeff):
+        """Circuit class for storing quantum information.
+
+        Parameters
+        ----------
+        coeff : np.ndarray(2, ...)
+            array of coeffs for each configuration.
+            # of dimension matches # of qubits in the system
+
+        Raises
+        ------
+        ValueError
+            Input coeffs is not of proper shape
+        """
         # check input type and coeff
-        n_cubit = len(coeff.shape)
-        for i in range(n_cubit):
+        n_qubit = len(coeff.shape)
+        for i in range(n_qubit):
             if coeff.shape[i] != 2:
                 raise ValueError("Input coeff is not of proper shape.")
         # check input coeff is well normalized
         tot = np.sum(np.abs(coeff) ** 2)
         if abs(tot - 1) > 1e-5:
-            warnings.warn("Norm excess 1, normalization will be applied.")
+            warnings.warn(
+                "Totel P excess 1., normalization will be applied.", RuntimeWarning
+            )
         self._state = np.array(coeff, dtype=complex) / np.sqrt(tot)
-        self._nqubit = n_cubit
+        self._nqubit = n_qubit
 
     @property
     def prob(self):
+        """np.ndarray(2, ...): the probability for each configuration."""
         return np.abs(self.state) ** 2
 
-    def measure(self, indices=[0]):
+    def measure(self, indices=None):
+        """Measure qubits value at given indices.
+
+        Parameters
+        ----------
+        indices : list of indices, optional
+            indices of qubit to perform measurement
+            if not given, measure the whole circuit
+
+        Returns
+        -------
+        tuple(tuple, Circuit)
+            the first element is the tuple of measured cubit
+            the second element is the leftover cirtuit wavefunction
+        """
         # get the indices to sum over prob exclude the selected indices
+        if indices is None:
+            indices = np.arange(self.n_qubit)
         n_bit = len(indices)
-        sum_indices = tuple(set(np.arange(self.n_cubit)).difference(set(indices)))
+        sum_indices = tuple(set(np.arange(self.n_qubit)).difference(set(indices)))
         # flatten probability into 1d array
         prob = np.sum(self.prob, axis=sum_indices).flatten()
         # get the measure result in the index form and converted to binary
@@ -39,31 +79,75 @@ class Circuit:
         return result, Circuit(renorm_state)
 
     def apply_operator(self, op, indices=[0]):
+        """Apply operator on this circuit.
+
+        Parameters
+        ----------
+        op : Operator
+            An operator instance conduting certain operation on circuit
+        indices : list, optional
+            indices of qubit(s) to perform the operation on.
+            if not given, the left-most(index 0) will be selected
+
+        Returns
+        -------
+        Circuit
+            the circuit state after the operation performed
+
+        Raises
+        ------
+        ValueError
+            If the number of selected indices does not match the operator
+        """
         n_bit = op.n_target
         if n_bit != len(indices):
             raise ValueError(
                 f"# of cubit does not match with the operator.\n"
                 f"n_qubit need: {self._nqubit}, got: {len(index)}"
             )
-        result = np.tensordot(
-            op.matrix, self.state, axes=[np.arange(-n_bit, 0), indices]
+        # move operated axes to the first n bit
+        target_indices = np.arange(n_bit)
+        new_state = np.moveaxis(self._state, indices, target_indices)
+        # operate with right sequence
+        new_state = np.tensordot(
+            op.matrix, new_state, axes=[np.arange(-n_bit, 0), target_indices]
         )
-        return Circuit(result)
-
+        # move operated axes back to original indices
+        new_state = np.moveaxis(new_state, target_indices, indices)
+        return Circuit(new_state)
 
     @property
-    def n_cubit(self):
+    def n_qubit(self):
+        """int: number of qubit in the circuit."""
         return self._nqubit
 
     @property
     def state(self):
+        """np.ndarray(2, ...): state wavefunction of the circuit."""
         return self._state
 
     def __matmul__(self, other):
+        """Implemented @ operator for Circuit instance."""
         return Circuit(coeff=np.tensordot(self.state, other.state, axes=0))
 
 
-def cubit(phi, theta, alpha=0.0):
+def qubit(phi, theta, alpha=0.0):
+    """Generate sinle qubit state.
+
+    Parameters
+    ----------
+    phi : float
+        zenith angle on the bloch sphere
+    theta : float
+        azimuth angle on the bloch sphere
+    alpha : float, optional
+        Global phace term, default at 0.
+
+    Returns
+    -------
+    TYPE
+        Description
+    """
     return Circuit(
         np.exp(alpha * 1j)
         * np.array(
