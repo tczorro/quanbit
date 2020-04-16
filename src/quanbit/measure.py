@@ -8,7 +8,7 @@
 
 
 def Measure(Circuit, indices):
-    """Measure a Circuit at given indices for its value(s)
+    """Measure a Circuit at given indices for its value(s).
 
     Parameters
     ----------

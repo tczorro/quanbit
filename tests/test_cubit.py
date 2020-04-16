@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 from unittest import TestCase
-from quanbit.circuit import Circuit, qubit
+from quanbit.circuit import Circuit, qubit, bell_state
 from quanbit.operators import CNOT, H, BellBasis, Pauli_X, Pauli_Y, Pauli_Z
 from quanbit.measure import Measure
 
@@ -64,11 +64,11 @@ class Testqubit(TestCase):
 
     def test_quantum_teleportation(self):
         """Test quantum teleportation algorithm."""
-        bell_state = Circuit(np.array([[1 / np.sqrt(2), 0.0], [0, 1 / np.sqrt(2)]]))
+        bell_st = bell_state(0)
         # generater a random state
         a = np.random.rand(3)
         alice = qubit(*a)
-        phi = alice @ bell_state
+        phi = alice @ bell_st
         phi = CNOT(phi, [0, 1])
         phi = H(phi, [0])
         bits, result_state = Measure(phi, [0, 1])
@@ -81,11 +81,11 @@ class Testqubit(TestCase):
 
     def test_quantum_teleportation_permute(self):
         """Test quantum teleportation algorithm with permutation."""
-        bell_state = Circuit(np.array([[1 / np.sqrt(2), 0.0], [0, 1 / np.sqrt(2)]]))
+        bell_st = bell_state(0)
         # generater a random state
         a = np.random.rand(3)
         alice = qubit(*a)
-        phi = bell_state @ alice
+        phi = bell_st @ alice
         phi = CNOT(phi, [2, 1])
         phi = H(phi, [2])
         # assert False
@@ -99,32 +99,69 @@ class Testqubit(TestCase):
 
     def test_quantum_teleportation_bell_basis(self):
         """Test quantum teleportation algorithm with bell basis projection."""
-        bell_state = Circuit(np.array([[1 / np.sqrt(2), 0.0], [0, 1 / np.sqrt(2)]]))
+        bell_st = bell_state(0)
         # generate a random state
         a = np.random.rand(3)
         alice = qubit(*a)
-        phi = alice @ bell_state
+        phi = alice @ bell_st
         phi = BellBasis(phi, [0, 1])
         bits, result_state = Measure(phi, [0, 1])
-        bit1, bit2 = bits
-        if bit1:
+        if bits == (0, 1):
             result_state = Pauli_X(result_state)
-        if bit2:
+        elif bits == (1, 0):
+            result_state = Pauli_Z(Pauli_X((result_state)))
+        elif bits == (1, 1):
+            result_state = Pauli_Z(result_state)
+        assert_allclose(result_state.state, alice.state)
+
+    def test_quantum_teleportation_bell_revert(self):
+        """Test quantum teleportation algorithm with bell basis projection."""
+        bell_st = bell_state(0)
+        # generate a random state
+        a = np.random.rand(3)
+        alice = qubit(*a)
+        phi = alice @ bell_st
+        phi = BellBasis(phi, [1, 0])
+        bits, result_state = Measure(phi, [1, 0])
+        if bits == (0, 1):
+            result_state = Pauli_X(result_state)
+        elif bits == (1, 0):
+            result_state = Pauli_X(Pauli_Z((result_state)))
+        elif bits == (1, 1):
             result_state = Pauli_Z(result_state)
         assert_allclose(result_state.state, alice.state)
 
     def test_quantum_teleportation_bell_basis_permute(self):
         """Test quantum teleportation algorithm with bell basis and permutation."""
-        bell_state = Circuit(np.array([[1 / np.sqrt(2), 0.0], [0, 1 / np.sqrt(2)]]))
+        bell_st = bell_state(0)
         # generate a random state
         a = np.random.rand(3)
         alice = qubit(*a)
-        phi = bell_state @ alice
+        phi = bell_st @ alice
         phi = BellBasis(phi, [1, 2])
         bits, result_state = Measure(phi, [1, 2])
-        bit1, bit2 = bits
-        if bit2:
-            result_state = Pauli_Z(result_state)
-        if bit1:
+        if bits == (0, 1):
             result_state = Pauli_X(result_state)
+        elif bits == (1, 0):
+            result_state = Pauli_X(Pauli_Z((result_state)))
+        elif bits == (1, 1):
+            result_state = Pauli_Z(result_state)
         assert_allclose(result_state.state, alice.state)
+
+    def test_bell_basis(self):
+        for i in range(3):
+            coeff = np.zeros(4)
+            coeff[i] = 1
+            coeff = coeff.reshape(2,2)
+        basic_state = Circuit(coeff)
+        new_state = BellBasis(basic_state, [0, 1])
+
+    def test_bell_state(self):
+        for i in range(4):
+            bell_st = bell_state(i)
+            proj_st = BellBasis(bell_st, [0, 1])
+            j = i // 2
+            k = i % 2
+            assert proj_st.state[j][k] == 1
+            back_st = BellBasis(proj_st, [0, 1])
+            np.allclose(back_st.state, bell_st.state)

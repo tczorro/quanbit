@@ -6,12 +6,14 @@
 
 """Quantum circuit class for containing quantum state."""
 
-import numpy as np
-import string
 import warnings
+
+import numpy as np
 
 
 class Circuit:
+    """Quantum circuit class for containing information for a state."""
+
     def __init__(self, coeff):
         """Circuit class for storing quantum information.
 
@@ -104,7 +106,7 @@ class Circuit:
         if n_bit != len(indices):
             raise ValueError(
                 f"# of cubit does not match with the operator.\n"
-                f"n_qubit need: {self._nqubit}, got: {len(index)}"
+                f"n_qubit need: {self._nqubit}, got: {len(indices)}"
             )
         # move operated axes to the first n bit
         target_indices = np.arange(n_bit)
@@ -128,7 +130,7 @@ class Circuit:
         return self._state
 
     def __matmul__(self, other):
-        """Implemented @ operator for Circuit instance."""
+        """Implement @ operator for Circuit instance."""
         return Circuit(coeff=np.tensordot(self.state, other.state, axes=0))
 
 
@@ -157,18 +159,18 @@ def qubit(phi, theta, alpha=0.0):
     )
 
 
-def bell_state(self, style=0):
-    """Generate one of the four bell state for a two-qubit system.
+def bell_state(style=0):
+    r"""Generate one of the four bell state for a two-qubit system.
 
     Parameters
     ----------
     style : int, optional
         0 - 3 is allowed:
         -----------------
-        (00) 0 = sqrt(2) (|00> + |11>)
-        (01) 1 = sqrt(2) (|00> - |11>)
-        (10) 2 = sqrt(2) (|01> + |10>)
-        (11) 3 = sqrt(2) (|01> - |10>)
+        (0)  \phi+ = sqrt(2) (|00> + |11>)
+        (1)  \psi+ = sqrt(2) (|01> + |10>)
+        (2)  \psi- = sqrt(2) (|00> - |11>)
+        (3)  \phi- = sqrt(2) (|00> - |11>)
 
     Returns
     -------
@@ -183,10 +185,10 @@ def bell_state(self, style=0):
     if style == 0:
         return Circuit(1 / np.sqrt(2) * np.array([[1, 0], [0, 1]], dtype=complex))
     elif style == 1:
-        return Circuit(1 / np.sqrt(2) * np.array([[1, 0], [0, -1]], dtype=complex))
-    elif style == 2:
         return Circuit(1 / np.sqrt(2) * np.array([[0, 1], [1, 0]], dtype=complex))
-    elif style == 3:
+    elif style == 2:
         return Circuit(1 / np.sqrt(2) * np.array([[0, 1], [-1, 0]], dtype=complex))
+    elif style == 3:
+        return Circuit(1 / np.sqrt(2) * np.array([[1, 0], [0, -1]], dtype=complex))
     else:
         raise ValueError(f"Input style is not a valid value.")

@@ -26,6 +26,8 @@ import numpy as np
 
 
 class Operators:
+    """Operator factory for generating operators for circuit."""
+
     def __init__(self, op_mtr):
         """Operator class for manipulate a Circuit instance.
 
@@ -48,7 +50,7 @@ class Operators:
         return self._op
 
     def __call__(self, target, indices=[0]):
-        """Implement
+        """Implement call function for operators.
 
         Parameters
         ----------
@@ -75,7 +77,7 @@ BellBasis = Operators(
     1
     / np.sqrt(2)
     * np.array(
-        [[1, 0, 0, 1], [1, 0, 0, -1], [0, 1, 1, 0], [0, 1, -1, 0]], dtype=complex
+        [[1, 0, 0, 1], [0, 1, 1, 0], [0, 1, -1, 0], [1, 0, 0, -1]], dtype=complex
     ).reshape(2, 2, 2, 2)
 )
 
