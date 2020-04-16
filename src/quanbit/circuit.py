@@ -181,12 +181,12 @@ def bell_state(self, style=0):
         input type value is not between [0, 3]
     """
     if style == 0:
-        return Circuit(np.sqrt(2) * [[1, 0],[0, 1]])
+        return Circuit(1 / np.sqrt(2) * np.array([[1, 0], [0, 1]], dtype=complex))
     elif style == 1:
-        return Circuit(np.sqrt(2) * [[1, 0],[0, -1]])
+        return Circuit(1 / np.sqrt(2) * np.array([[1, 0], [0, -1]], dtype=complex))
     elif style == 2:
-        return Circuit(np.sqrt(2) * [[0, 1],[1, 0]])
+        return Circuit(1 / np.sqrt(2) * np.array([[0, 1], [1, 0]], dtype=complex))
     elif style == 3:
-        return Circuit(np.sqrt(2) * [[0, 1],[-1, 0]])
+        return Circuit(1 / np.sqrt(2) * np.array([[0, 1], [-1, 0]], dtype=complex))
     else:
         raise ValueError(f"Input style is not a valid value.")

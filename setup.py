@@ -24,16 +24,19 @@
 
 from setuptools import find_packages, setup
 
+
 def get_readme():
     """Load README.rst for display on PyPI."""
     with open("README.md") as f:
         return f.read()
 
+
 setup(
     name="quanbit",
     version="0.0.1",
-    description="Python library for simulatin quantum computor and algorithm.",
+    description="Python library for simulating quantum computor and algorithm.",
     long_description=get_readme(),
+    long_description_content_type="text/markdown",
     author="Derrick Yang",
     author_email="yxt1991@gmail.com",
     url="https://github.com/tczorro/quanbit",
