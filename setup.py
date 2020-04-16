@@ -32,8 +32,8 @@ def get_readme():
 setup(
     name="quanbit",
     version="0.0.1",
-    description="Python library for simulatin quantum computor ang algorithm.",
-    # long_description=get_readme(),
+    description="Python library for simulatin quantum computor and algorithm.",
+    long_description=get_readme(),
     author="Derrick Yang",
     author_email="yxt1991@gmail.com",
     url="https://github.com/tczorro/quanbit",

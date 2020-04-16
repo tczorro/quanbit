@@ -6,7 +6,8 @@
 
 from unittest import TestCase
 from quanbit.circuit import Circuit, qubit
-from quanbit.operators import CNOT, H, BellBasis, Pauli_X, Pauli_Y, Pauli_Z, Measure
+from quanbit.operators import CNOT, H, BellBasis, Pauli_X, Pauli_Y, Pauli_Z
+from quanbit.measure import Measure
 
 import numpy as np
 from numpy.testing import assert_allclose, assert_almost_equal

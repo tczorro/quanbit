@@ -23,7 +23,6 @@ Pauli_Z, Z : Operator, callble
 """
 
 import numpy as np
-from abc import ABCMeta, abstractstaticmethod, abstractmethod
 
 
 class Operators:
@@ -95,22 +94,3 @@ Y = Pauli_Y
 # /simga 3
 Pauli_Z = Operators(np.array([[1, 0], [0, -1]], dtype=complex))
 Z = Pauli_Z
-
-
-def Measure(Circuit, indices):
-    """Measure a Circuit at given indices for its value(s)
-
-    Parameters
-    ----------
-    Circuit : Circuit
-        a Circuit instance
-    indices : list or list-like
-        indices for measuring the circuit wafefunction
-
-    Returns
-    -------
-    tuple(tuple, Circuit)
-        the first element is the tuple of measured cubit
-        the second element is the leftover cirtuit wavefunction
-    """
-    return Circuit.measure(indices)

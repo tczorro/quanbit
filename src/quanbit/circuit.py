@@ -27,6 +27,7 @@ class Circuit:
             Input coeffs is not of proper shape
         """
         # check input type and coeff
+        coeff = np.array(coeff, dtype=complex)
         n_qubit = len(coeff.shape)
         for i in range(n_qubit):
             if coeff.shape[i] != 2:
@@ -37,7 +38,7 @@ class Circuit:
             warnings.warn(
                 "Totel P excess 1., normalization will be applied.", RuntimeWarning
             )
-        self._state = np.array(coeff, dtype=complex) / np.sqrt(tot)
+        self._state = coeff / np.sqrt(tot)
         self._nqubit = n_qubit
 
     @property
@@ -157,4 +158,35 @@ def qubit(phi, theta, alpha=0.0):
 
 
 def bell_state(self, style=0):
-    ...
+    """Generate one of the four bell state for a two-qubit system.
+
+    Parameters
+    ----------
+    style : int, optional
+        0 - 3 is allowed:
+        -----------------
+        (00) 0 = sqrt(2) (|00> + |11>)
+        (01) 1 = sqrt(2) (|00> - |11>)
+        (10) 2 = sqrt(2) (|01> + |10>)
+        (11) 3 = sqrt(2) (|01> - |10>)
+
+    Returns
+    -------
+    Circuit
+        Circuit instance with one of the four bell state
+
+    Raises
+    ------
+    ValueError
+        input type value is not between [0, 3]
+    """
+    if style == 0:
+        return Circuit(np.sqrt(2) * [[1, 0],[0, 1]])
+    elif style == 1:
+        return Circuit(np.sqrt(2) * [[1, 0],[0, -1]])
+    elif style == 2:
+        return Circuit(np.sqrt(2) * [[0, 1],[1, 0]])
+    elif style == 3:
+        return Circuit(np.sqrt(2) * [[0, 1],[-1, 0]])
+    else:
+        raise ValueError(f"Input style is not a valid value.")
