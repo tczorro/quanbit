@@ -29,8 +29,16 @@ setup(
     package_dir={"": "src"},
     packages=find_packages(where="src"),
     zip_safe=False,
-    install_requires=[
-        "numpy>=1.16",
-        "pytest>=2.6",
+    python_requires=">=3.6",
+    install_requires=["numpy>=1.16",],
+    keywords=["Quantum Computing", "Quantum Algorithm"],
+    classifiers=[
+        "Intended Audience :: Science/Research",
+        "Topic :: Scientific/Engineering",
+        "Development Status :: 3 - Alpha",
+        "License :: OSI Approved :: BSD License",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
     ],
 )
