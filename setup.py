@@ -1,24 +1,10 @@
 #!/usr/bin/env python
-# GRID is a numerical integration module for quantum chemistry.
+# Copyright (c) 2020, Xiaotian Derrick Yang
+# All rights reserved.
 #
-# Copyright (C) 2011-2019 The GRID Development Team
-#
-# This file is part of GRID.
-#
-# GRID is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 3
-# of the License, or (at your option) any later version.
-#
-# GRID is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, see <http://www.gnu.org/licenses/>
-# --
-# pragma pylint: disable=invalid-name
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree.
+
 """Package build and install script."""
 
 
@@ -37,7 +23,7 @@ setup(
     description="Python library for simulating quantum computor and algorithm.",
     long_description=get_readme(),
     long_description_content_type="text/markdown",
-    author="Derrick Yang",
+    author="Xiaotian Derrick Yang",
     author_email="yxt1991@gmail.com",
     url="https://github.com/tczorro/quanbit",
     package_dir={"": "src"},
